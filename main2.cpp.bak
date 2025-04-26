@@ -1,0 +1,511 @@
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include "./Utils/esfera.h"
+#include "./Engine/Object.h"
+#include "./Engine/Camera.h"
+#include "./Engine/Shaders.h"
+#include "./Engine/ProcessInput.h"
+#include "./Utils/Vertices.h"
+
+// Para las transformaciones
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "./Utils/stb_image.h"
+
+
+// Constantes
+#define GL_PI 3.14f
+#define RADIO 0.5f // Para la esfera
+#define GradosToRadianes 0.0175f
+#define DISTANCIA 100
+
+
+extern GLuint setShaders(const char *nVertx, const char *nFrag);
+
+
+//////////////// VAO //////////////////
+unsigned int gVAO_Ejes = 0;
+unsigned int gVAO_Cuadrado = 0;
+unsigned int gVAO_Cubo = 0;
+unsigned int gVAO_Esfera = 0;
+unsigned int gVAO_Arbol = 0;
+
+// Texturas
+int hierba;
+int arbolText;
+
+// Partes de la grua
+objeto suelo = {0, 0, 0, 0, 0, 0, 100, 1, 100, {.282, .639, .329},36, gVAO_Cuadrado, 0};
+objeto base = { 0, 1.0f, 0.5f, 0, 0, 0, 10, 2, 4, {0.8f, 0, 0}, 36, gVAO_Cubo, 0};
+objeto cabina = { 5.0f, 1.0f, 0, 0, 0, 0, 2.0f, 3.0f, 4.0f, {0.8f, 0, 0}, 36, gVAO_Cubo, 0};
+objeto logoFerrari = { 6.0f, 0.2f, 0, 0, 0, 0, 0.1f, 0.4f, 0.3f, {0.98f, 0.741f, 0}, 36, gVAO_Cubo, 0};
+objeto rotparabrisas1 = { 6.1f, 2.25, -0.5, 0, 0, 0, 0.1f, 0.1f, 0.1f, {0,0,0}, 36, gVAO_Cubo, 0};
+objeto parabrisas1 = {0, 0, -4, 0, 0, 0, 1.0f, 1.0f, 12.0f, {0,0,0},36, gVAO_Cubo, 0};
+objeto rotparabrisas2 = { 6.1f, 2.25, 1.3, 0, 0, 0, 0.1f, 0.1f, 0.1f, {0,0,0},36, gVAO_Cubo, 0};
+objeto parabrisas2 = {0, 0, -4, 0, 0, 0, 1.0f, 1.0f, 12.0f, {0,0,0},36, gVAO_Cubo, 0};
+objeto articulacion = { -0.4f, 0.4f, 0, 35, 0, 0, 1.0f, 1.0f, 1.0f, {0.2f, 0.2f, 0.2f}, 1080, gVAO_Esfera, 0};
+objeto brazo = { 0.0f, 3.0f, 0, 0, 0, 0, 0.5f, 6.0f, 0.5f, {0.2f, 0.2f, 0.2f}, 36, gVAO_Cubo, 0};
+objeto cristal = {6.0f, 1.5f, 0, 0, 0, 0, 0.1f, 1.5f, 3.0f, {0.5f, 0.8f, 1.0f}, 36, gVAO_Cubo, 0};
+objeto ruedaDD = { 3.5f, -0.5f, 2.0f, 0, 0, 0, 1.5f, 1.5f, 1.5f, {0,0,0}, 36, gVAO_Cubo, 0};
+objeto ruedaDI = {3.5f, -0.5f, -2.0f, 0, 0, 0, 1.5f, 1.5f, 1.5f, {0,0,0}, 36, gVAO_Cubo, 0};
+objeto ruedaTD = {-3.5f, -0.5f, 2.0f, 0, 0, 0, 1.5f, 1.5f, 1.5f, {0,0,0}, 36, gVAO_Cubo, 0};
+objeto ruedaTI = {-3.5f, -0.5f, -2.0f, 0, 0, 0, 1.5f, 1.5f, 1.5f, {0,0,0}, 36, gVAO_Cubo, 0};
+objeto referencia = {20.0f, 0.1f, 3.0f, 0, 0, 0, 2.0f, 0.1f, 10.0f, {1.0f, 1.0f, 1.0f}, 36, gVAO_Cubo, 0};
+objeto foco1 = {6.0f, 0.1f, -1.60f, 0, 0, 0, 0.1f, 0.3f, 0.3f, {0.9f, 0.9f, 0.9f}, 1080, gVAO_Esfera, 0};
+objeto foco2 = {6.0f, 0.1f, 1.60f, 0, 0, 0, 0.1f, 0.3f, 0.3f, {0.9f, 0.9f, 0.9f}, 1080, gVAO_Esfera, 0};
+objeto arbol1 = {10.0f, 0.5f, 10.0f, 0, 0, 0, 3.0f, 3.0f, 3.0f, {0, 0, 0}, 6, gVAO_Arbol, 0};
+objeto arbol2 = {2.0f, 0.5f, 12.0f, 0, 0, 0, 3.0f, 3.0f, 3.0f, {0, 0, 0}, 6, gVAO_Arbol, 0};
+objeto arbol3 = {-12.0f, 0.5f, 1.0f, 0, 0, 0, 3.0f, 3.0f, 3.0f, {0, 0, 0}, 6, gVAO_Arbol, 0};
+objeto arbol4 = {-21.0f, 0.5f, 20.0f, 0, 0, 0, 3.0f, 3.0f, 3.0f, {0, 0, 0}, 6, gVAO_Arbol, 0};
+std::vector<objeto> referencias;
+objeto* objetos[] = {
+    &base, &cabina, &logoFerrari, &rotparabrisas1, &rotparabrisas2,
+    &parabrisas1, &parabrisas2, &brazo, &cristal,
+    &ruedaDD, &ruedaDI, &ruedaTD, &ruedaTI, &referencia
+};
+
+// Asignar VAO a los objetos
+void inicializarVAOs() {
+    for (int i = 0; i < 14; ++i) { objetos[i]->VAO = gVAO_Cubo; }
+    articulacion.VAO = gVAO_Esfera; // Excepción para articulación
+    foco1.VAO = gVAO_Esfera;
+    foco2.VAO = gVAO_Esfera;
+    arbol1.VAO = gVAO_Arbol;
+    arbol2.VAO = gVAO_Arbol;
+    arbol3.VAO = gVAO_Arbol;
+    arbol4.VAO = gVAO_Arbol;
+    suelo.VAO = gVAO_Cuadrado;
+}
+
+bool dibujarRueda = false;
+
+///////////// VARIABLES PARA TIEMPO Y MOVIMIENTO //////////
+double lastTime = glfwGetTime();
+double currentTime;
+double lapsoTime;
+int fps = 0;
+GLfloat angleWheel = 0.0f; 
+
+
+void tiempo() {
+    static float unSegundo = 0;
+    currentTime = glfwGetTime(); // Tiempo actual
+    fps++;
+    lapsoTime = currentTime - lastTime; // Tiempo transcurrido desde el ultimo frame
+    unSegundo += lapsoTime;
+    if (unSegundo >= 1.0f) {
+        fps = 0;
+        unSegundo = 0;
+    }
+    lastTime = currentTime;
+}
+
+// Calcula el desplazamiento de la base de la grúa en función de su velocidad y dirección
+void movimiento() {
+    base.px += base.velocidad * sin(base.angulo_trans * GradosToRadianes) * lapsoTime;
+    base.pz += base.velocidad * cos(base.angulo_trans * GradosToRadianes) * lapsoTime;
+    angleWheel += base.velocidad;
+    if (angleWheel > 360.0f){ angleWheel -= 360.0f; }
+    // Para que cuando sale por un lado aparezca por el otro
+    if (base.px > 50) {base.px = -50;}
+    if (base.px < -50){ base.px = 50;}
+    if (base.pz > 50){base.pz = -50;}
+    if (base.pz < -50) {base.pz = 50;}
+}
+
+int myCargaTexturas (const char* nome) {
+    GLuint textura;
+    glGenTextures (1, &textura);
+    glBindTexture(GL_TEXTURE_2D, textura); 
+    
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) ;
+   
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(nome, &width, &height, &nrChannels, 0);
+    if (data){
+        if (nrChannels == 3){ glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);}
+        if( nrChannels == 4){ glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);}
+    }else{
+        printf("Formato de textura no soportado: %d canales", nrChannels);
+    }
+    stbi_image_free(data);
+    stbi_set_flip_vertically_on_load(1);
+    return (textura);
+}
+
+void inicializarReferencias() {
+    float posiciones[][3] = {
+        {20.5f, 0.1f, -1.5f}, {19.5f, 0.1f, -0.5f}, {20.5f, 0.1f, 0.5f}, 
+        {19.5f, 0.1f, 1.5f},  {20.5f, 0.1f, 2.5f}, {19.5f, 0.1f, 3.5f}, 
+        {20.5f, 0.1f, 4.5f},  {19.5f, 0.1f, 5.5f}, {20.5f, 0.1f, 6.5f}, {19.5f, 0.1f, 7.5f}
+    };
+
+    for (int i = 0; i < 10; ++i) {
+        objeto ref;
+        ref.px = posiciones[i][0];
+        ref.py = posiciones[i][1];
+        ref.pz = posiciones[i][2];
+        ref.angulo_trans = 0;
+        ref.angulo_rot = 0;
+        ref.velocidad = 0;
+        ref.sx = 1.0f;
+        ref.sy = 0.2f;
+        ref.sz = 1.0f;
+        ref.colores[0] = 0.0f;
+        ref.colores[1] = 0.0f;
+        ref.colores[2] = 0.0f;
+        ref.num_vertices = 36;
+        ref.VAO = gVAO_Cubo;
+        referencias.push_back(ref);
+    }
+}
+
+// Para dibujar los ejes de coordenadas
+void dibujaEjes() {
+    glGenVertexArrays(1, &gVAO_Ejes);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(gVAO_Ejes);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_ejes), vertices_ejes, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+// Crea un cuadrado que servira como suelo
+void cuadradoXZ(){
+    glGenVertexArrays(1, &gVAO_Cuadrado);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(gVAO_Cuadrado);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_suelo), vertices_suelo, GL_STATIC_DRAW);
+    // Posicion
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    // Normales
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    // Texturas
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(9*sizeof(float)));
+    glEnableVertexAttribArray(3);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+// Create a VAO for a cube using indices.
+void dibujaCubo() {
+    glGenVertexArrays(1, &gVAO_Cubo);
+    unsigned int VBO, EBO;
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    
+    glBindVertexArray(gVAO_Cubo);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_cubo), vertices_cubo, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_cubo), indices_cubo, GL_STATIC_DRAW);
+    // Posicion
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    // *Normal (texturas)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+// Dibujar arbol
+void dibuajrArbol(){
+    unsigned int VBO, EBO;
+
+    glGenVertexArrays(1, &gVAO_Arbol);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(gVAO_Arbol);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_arbol), vertices_arbol, GL_STATIC_DRAW);
+    // Posicion
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+    
+    // Normales
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    // Texturas
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11*sizeof(float), (void*)(9*sizeof(float)));
+    glEnableVertexAttribArray(3);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+// Create a VAO for the sphere using vertices_esfera from "esfera.h"
+void dibujaEsfera(){
+    glGenVertexArrays(1, &gVAO_Esfera);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(gVAO_Esfera);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_esfera), vertices_esfera, GL_STATIC_DRAW);
+    
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    // *Normal (texturas)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(2);
+    // Posicion
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+// Inicializaciones de OpenGL
+void openGlInit() {
+    glClearDepth(1.0f); // Buffer de profundidad
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Color de fondo
+    glEnable(GL_DEPTH_TEST); 
+    glDisable(GL_CULL_FACE); // Ocultacion de caras
+    glCullFace(GL_BACK); // Oculta las caras traseras (normal que no mira a la camara)
+}
+
+void dibujarObjeto(glm::mat4& stack, unsigned int transformLoc, unsigned int colorLoc, objeto obj, bool dibujarRueda) {
+    glm::mat4 transform;
+    if(obj.sx != 10){
+        transform = glm::mat4(1.0f);
+        transform = glm::translate(stack, glm::vec3(obj.px, obj.py, obj.pz));
+        if (dibujarRueda) {
+            transform = glm::rotate(transform, -angleWheel * GradosToRadianes, glm::vec3(0, 0, 1));
+        } else {
+            transform = glm::rotate(transform, obj.angulo_trans * GradosToRadianes, glm::vec3(1, 0, 0));
+        }
+    }else{ transform = stack; }
+    
+    transform = glm::scale(transform, glm::vec3(obj.sx, obj.sy, obj.sz));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+    glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(obj.colores[0], obj.colores[1], obj.colores[2])));
+    glBindVertexArray(obj.VAO);
+    if(obj.num_vertices == 36) {
+        glDrawElements(GL_TRIANGLES, obj.num_vertices, GL_UNSIGNED_INT, 0);
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, 1080);
+    }
+
+    glBindVertexArray(0);
+}
+
+void dibujarSinRef(unsigned int transformLoc, unsigned int colorLoc, objeto obj, int textura) {
+    // 1) Transformación base (traslación + rotación dinámica + escalado)
+    glm::mat4 baseTransform = glm::mat4(1.0f);
+    baseTransform = glm::translate(baseTransform, glm::vec3(obj.px, obj.py, obj.pz));
+    baseTransform = glm::scale(baseTransform, glm::vec3(obj.sx, obj.sy, obj.sz));
+
+    // Enviamos color y textura una sola vez
+    glUniform3fv(colorLoc, 1, glm::value_ptr(glm::vec3(obj.colores[0], obj.colores[1], obj.colores[2])));
+    glBindTexture(GL_TEXTURE_2D, textura);
+    glBindVertexArray(obj.VAO);
+
+    // Dibujado “normal”
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(baseTransform));
+    glDrawArrays(GL_TRIANGLES, 0, obj.num_vertices);
+
+    // Dibujado “rotado +90°” encima
+    glm::mat4 plus90 = glm::rotate(baseTransform, 90.0f * GradosToRadianes, glm::vec3(0,1,0));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(plus90));
+    glDrawArrays(GL_TRIANGLES, 0, obj.num_vertices);
+
+    // Limpieza
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
+}
+
+void dibujarParabrisas(glm::mat4& gruaTransform, unsigned int transformLoc, unsigned int colorLoc, objeto rota, objeto paraBrisas,  bool dibujarRueda){
+    glm::mat4 paraBrisasTransform = glm::translate(gruaTransform, glm::vec3(rota.px, rota.py, rota.pz));
+    paraBrisasTransform = glm::rotate(paraBrisasTransform, rota.angulo_trans * GradosToRadianes, glm::vec3(1,0,0));
+    paraBrisasTransform = glm::scale(paraBrisasTransform, glm::vec3(rota.sx, rota.sy, rota.sz));
+    dibujarObjeto(paraBrisasTransform, transformLoc, colorLoc, rota, dibujarRueda);
+    dibujarObjeto(paraBrisasTransform, transformLoc, colorLoc, paraBrisas, dibujarRueda);
+}
+
+void dibujarHierbajos(unsigned int transformLoc, unsigned int colorLoc){
+    dibujarSinRef(transformLoc, colorLoc, arbol1, arbolText);
+    dibujarSinRef(transformLoc, colorLoc, arbol2, arbolText);
+    dibujarSinRef(transformLoc, colorLoc, arbol3, arbolText);
+    dibujarSinRef(transformLoc, colorLoc, arbol4, arbolText);
+}
+// En la sección de iluminación, reemplaza la función iluminacion() con:
+
+
+void Display() {
+    dibujarRueda = false;
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(shaderProgram);
+    myCamara();
+    // Las buscamos en el shader
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "model");
+    unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
+
+    iluminacion();
+    dibujarHierbajos(transformLoc, colorLoc);
+    dibujarSinRef(transformLoc, colorLoc, suelo, hierba);
+
+    // Dibujamos un objeto de referencia
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glm::mat4 transform = glm::mat4(1.0f);
+    dibujarObjeto(transform, transformLoc, colorLoc, referencia, dibujarRueda);
+    for (size_t i = 0; i < referencias.size(); ++i) {
+        dibujarObjeto(transform, transformLoc, colorLoc, referencias[i], dibujarRueda);
+    }
+
+    /////////////////////////// DIBUJAR GRUA ///////////////////////////
+    glm::mat4 gruaTransform = glm::mat4(1.0f);
+    gruaTransform = glm::translate(gruaTransform, glm::vec3(base.px, base.py, base.pz));
+    gruaTransform = glm::rotate(gruaTransform, (base.angulo_trans - 90) * GradosToRadianes, glm::vec3(0,1,0));
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, base, dibujarRueda); 
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, cabina, dibujarRueda); // Cabina (cubo)
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, logoFerrari, dibujarRueda); // Logo de ferrari.
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, cristal, dibujarRueda); // Cristal de la cabina
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, foco1, dibujarRueda); // Dibujamso un faro 
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, foco2, dibujarRueda);
+
+    ////////////////////// PARABRISAS ///////////////////////
+    dibujarParabrisas(gruaTransform, transformLoc, colorLoc, rotparabrisas1, parabrisas1, dibujarRueda);
+    dibujarParabrisas(gruaTransform, transformLoc, colorLoc, rotparabrisas2, parabrisas2, dibujarRueda);
+
+    //////////////////////// ARTICULACION Y BRAZO ///////////////////////
+    glm::mat4 articulacionTransform = glm::translate(gruaTransform, glm::vec3(articulacion.px, articulacion.py, articulacion.pz));
+    articulacionTransform = glm::rotate(articulacionTransform, articulacion.angulo_trans * GradosToRadianes, glm::vec3(0,0,1));
+    articulacionTransform = glm::rotate(articulacionTransform, articulacion.angulo_rot * GradosToRadianes, glm::vec3(1,0,0));
+    dibujarObjeto(articulacionTransform, transformLoc, colorLoc, articulacion, dibujarRueda);
+    dibujarObjeto(articulacionTransform, transformLoc, colorLoc, brazo, dibujarRueda);// Brazo (cube)
+    ////////////////////// DIBUJAR RUEDAS ///////////////////////
+    dibujarRueda = true;
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, ruedaDD, dibujarRueda);
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, ruedaDI, dibujarRueda);
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, ruedaTD, dibujarRueda);
+    dibujarObjeto(gruaTransform, transformLoc, colorLoc, ruedaTI, dibujarRueda);
+    
+    glBindVertexArray(0);
+}
+
+bool parabrisasOn = false;
+bool bajando = true;
+void funcionParabrisas(){
+    if(parabrisasOn){
+        if(bajando){
+            if(rotparabrisas1.angulo_trans > -90.0f){
+                rotparabrisas1.angulo_trans -= 2.0f;
+                rotparabrisas2.angulo_trans -= 2.0f;
+            } else {
+                rotparabrisas1.angulo_trans = -90.0f;
+                rotparabrisas2.angulo_trans = -90.0f;
+                bajando = false;
+            }
+        } else {
+            if(rotparabrisas1.angulo_trans < 0.0f){
+                rotparabrisas1.angulo_trans += 2.0f;
+                rotparabrisas2.angulo_trans += 2.0f;
+            } else {
+                rotparabrisas1.angulo_trans = 0.0f;
+                rotparabrisas2.angulo_trans = 0.0f;
+                bajando = true;
+            }
+        }
+    }
+}
+
+int main() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Grua con OpenGL 3.3       :)", NULL, NULL);
+    if (window == NULL) {
+        std::cout << "Failed to create window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+    
+    openGlInit();
+    shaderProgram = setShaders("./Engine/shader.vert", "./Engine/shader.frag");
+    
+    // Inicializamos los VAOs
+    dibujaEjes();
+    cuadradoXZ();
+    dibujaEsfera();
+    dibujaCubo();
+    dibuajrArbol();
+
+    hierba = myCargaTexturas("./Utils/textures/baseGrass.jpeg");
+    arbolText = myCargaTexturas("./Utils/textures/a.png");
+    // Asignamos los VAOs a los objetos
+    inicializarVAOs();
+    inicializarReferencias();
+    
+    if(cameraMode == EXTERIOR){
+        updateCameraMode();
+    }
+
+    // Bucle principal
+    while (!glfwWindowShouldClose(window)) {
+        processInput(window);
+        tiempo();
+        movimiento();
+        if(cameraMode != EXTERIOR){ updateCameraMode();}
+        Display();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+        funcionParabrisas();
+    }
+    
+    // Liberar recursos
+    glDeleteVertexArrays(1, &gVAO_Ejes);
+    glDeleteVertexArrays(1, &gVAO_Cuadrado);
+    glDeleteVertexArrays(1, &gVAO_Cubo);
+    glDeleteVertexArrays(1, &gVAO_Esfera);
+    glDeleteVertexArrays(1, &gVAO_Arbol);
+    glfwTerminate();
+    return 0;
+}
