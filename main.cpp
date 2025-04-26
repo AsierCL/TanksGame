@@ -4,14 +4,14 @@
 #include <iostream>
 #include <vector>
 
-#include "Engine/Camera.h"
-#include "Engine/Shaders.h"
-#include "Engine/Tank.h"
-#include "Engine/Bullet.h"
-#include "Engine/Wall.h"
-#include "Utils/Vertices.h"
-#include "Utils/esfera.h"
-#include "Utils/stb_image.h"
+#include "./include/Engine/Camera.h"
+#include "./include/Engine/Shaders.h"
+#include "./include/Engine/Objects/Tank.h"
+#include "./include/Engine/Objects/Bullet.h"
+#include "./include/Engine/Objects/Wall.h"
+#include "./include/Utils/Vertices.h"
+#include "./include/Utils/esfera.h"
+#include "./include/Utils/stb_image.h"
 
 // Transform helpers
 #include <glm/glm.hpp>
@@ -290,7 +290,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     openGlInit();
-    shaderProgram = setShaders("./Engine/shader.vert", "./Engine/shader.frag");
+    shaderProgram = setShaders("./shaders/shader.vert", "./shaders/shader.frag");
 
     // Initialize scene: VAOs, textures, tanks, walls...
     initScene();
@@ -299,8 +299,8 @@ int main() {
     cuadradoXZ();
     dibuajrArbol();
 
-    hierba = myCargaTexturas("./Utils/textures/baseGrass.jpeg");
-    arbolText = myCargaTexturas("./Utils/textures/a.png");
+    hierba = myCargaTexturas("./assets/textures/baseGrass.jpeg");
+    arbolText = myCargaTexturas("./assets/textures/a.png");
 
     
     // Asignamos los VAOs a los objetos

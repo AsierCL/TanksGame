@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../Engine/Shaders.h"
-#include "../Engine/Object.h"
+#include "../Engine/Objects/Object.h"
 
 // SCREEN SIZE
 const unsigned int SCR_WIDTH = 800;

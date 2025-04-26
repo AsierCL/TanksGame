@@ -1,5 +1,5 @@
-#ifndef FUNCIONES_H
-#define FUNCIONES_H
+#ifndef VERTICES_H
+#define VERTICES_H
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
@@ -78,4 +78,4 @@ float vertices_arbol[]{
     -0.5f, -0.5f,  0.0f,    1.0, 1.0, 1.0,   0.0f, 0.0f, 1.0,     0, 0,
 };
 
-#endif // FUNCIONES_H
+#endif // VERTICES_H

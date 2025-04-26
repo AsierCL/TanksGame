@@ -13,7 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../Engine/Object.h"
+#include "../Engine/Objects/Object.h"
 #include "../Utils/Const.h"
 
 // Variable global para controlar el modo noche

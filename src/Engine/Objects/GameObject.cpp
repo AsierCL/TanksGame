@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "../../../include/Engine/Objects/GameObject.h"
 
 GameObject::GameObject()
     : position(0.0f), rotation(0.0f), scale(1.0f) {}

@@ -1,5 +1,5 @@
-#include "./Shaders.h"
-#include "../Engine/lecturaShader_0_9.h"
+#include "../../include/Engine/Shaders.h"
+#include "../../include/Engine/lecturaShader_0_9.h"
 
 bool isNightMode = false;
 extern objeto base;

@@ -3,28 +3,25 @@
 ###############################################
 
 # Compilador y flags
-gCXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I. -IEngine -IUtils -IGame
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -Iinclude/Engine -Iinclude/Engine/Objects -Iinclude/Utils
 
 # Librerías a enlazar
 LIBS = -lglfw -lGL -ldl -lm
 
-# Directorios
-SRC_DIR := .
-ENGINE_DIR := Engine
-UTILS_DIR := Utils
-GAME_DIR := Game
-
 # Ficheros fuente
-SRC := $(wildcard $(SRC_DIR)/main.cpp) \
-       $(wildcard $(ENGINE_DIR)/*.cpp) \
-       $(wildcard $(GAME_DIR)/*.cpp)
+SRC = \
+    main.cpp \
+    src/Engine/Camera.cpp \
+    src/Engine/Shaders.cpp \
+    src/Engine/Objects/Bullet.cpp \
+    src/Engine/Objects/GameObject.cpp \
+    src/Engine/Objects/Tank.cpp \
+    src/Engine/Objects/Wall.cpp \
+    src/Utils/glad.c
 
-# Incluir glad.c manualmente
-SRC += $(UTILS_DIR)/glad.c
-
-# Objetos generados
-OBJ := $(SRC:.cpp=.o)
+# Archivos objeto generados
+OBJ = $(SRC:.cpp=.o)
 OBJ := $(OBJ:.c=.o)
 
 # Nombre del ejecutable
@@ -37,11 +34,10 @@ all: $(target)
 $(target): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
-# Regla genérica para .cpp -> .o
+# Reglas genéricas
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Regla genérica para .c -> .o (glad.c)
 %.o: %.c
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

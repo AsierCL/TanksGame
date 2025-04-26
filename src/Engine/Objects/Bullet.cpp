@@ -1,5 +1,5 @@
-#include "Bullet.h"
-#include "Object.h"      // for VAO handles
+#include "../../../include/Engine/Objects/Bullet.h"
+#include "../../../include/Engine/Objects/Object.h"      // for VAO handles
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
