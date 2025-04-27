@@ -11,11 +11,14 @@ public:
     int health;
     int score;
     float turretOffset;
+    int   moveChannel = -1;    // canal SDL_mixer donde suena el “move”
     glm::vec3 turretDirection;
 
     Tank();
     ~Tank();
 
+    void  startMoveSound();
+    void  stopMoveSound();
     void update(float dt) override;
     void draw(unsigned int shaderProgram) override;
     void draw(unsigned int shaderProgram, unsigned int textureID);

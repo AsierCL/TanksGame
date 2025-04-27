@@ -4,10 +4,10 @@
 
 # Compilador y flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -Iinclude/Engine -Iinclude/Engine/Objects -Iinclude/Utils
+CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -Iinclude/Engine -Iinclude/Engine/Objects -Iinclude/Utils 
 
 # Librerías a enlazar
-LIBS = -lglfw -lGL -ldl -lm
+LIBS = -lglfw -lGL -ldl -lm -lSDL2 -lSDL2_mixer
 
 # Ficheros fuente
 SRC = \

@@ -6,6 +6,7 @@
 
 #include "./include/Engine/Camera.h"
 #include "./include/Engine/Shaders.h"
+#include "./include/Engine/AudioManager.h"
 #include "./include/Engine/Objects/Tank.h"
 #include "./include/Engine/Objects/Bullet.h"
 #include "./include/Engine/Objects/Wall.h"
@@ -48,7 +49,7 @@ unsigned int gVAO_Esfera = 0;
 unsigned int gVAO_Arbol = 0;
 
 // Texturas
-int hierba;
+int sandText;
 int arbolText;
 int tankText;
 int wallText;
@@ -95,7 +96,7 @@ void dibujarSuelo(){
     glBindVertexArray(0);
 }
 
-void dibujaCubo() {
+void dibujarCubo() {
     glGenVertexArrays(1, &gVAO_Cubo);
     unsigned int VBO, EBO;
     glGenBuffers(1, &VBO);
@@ -122,7 +123,7 @@ void dibujaCubo() {
     glBindVertexArray(0);
 }
 
-void dibujaEsfera(){
+void dibujarEsfera(){
     glGenVertexArrays(1, &gVAO_Esfera);
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -302,12 +303,26 @@ int main() {
 
     // Initialize scene: VAOs, textures, tanks, walls...
     initScene();
-    dibujaCubo();
-    dibujaEsfera();
+    dibujarCubo();
+    dibujarEsfera();
     dibujarSuelo();
     dibujarArbusto();
 
-    hierba = myCargaTexturas("./assets/textures/sandTexture.png");
+    if (!AudioManager::get().init()) {
+        std::cerr << "No se pudo inicializar audio\n";
+        return -1;
+    }
+    
+    AudioManager::get().loadSound("hit",   "./assets/audio/hit.wav");
+    AudioManager::get().loadSound("shoot", "./assets/audio/shoot.wav");
+    AudioManager::get().loadSound("tank", "./assets/audio/tank-moving.wav");
+    AudioManager::get().loadMusic("bgm", "./assets/audio/bgSound.wav");
+
+    AudioManager::get().playMusic("bgm", -1);  // bucle infinito
+    // opcional: ajustar volumen [0..MIX_MAX_VOLUME]
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+
+    sandText = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
     tankText = myCargaTexturas("./assets/textures/tankTexture.png");
     wallText = myCargaTexturas("./assets/textures/wallTexture.png");
@@ -358,6 +373,15 @@ void processGameInput(GLFWwindow* window) {
         player1.rotateLeft(90 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         player1.rotateRight(90 * deltaTime);
+
+    // Sound effects
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ||
+        glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        if (player1.moveChannel == -1) player1.startMoveSound();
+    } else {
+        if (player1.moveChannel != -1) player1.stopMoveSound();
+    }
+
     static bool fireReleased1 = true;
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && fireReleased1) {
         bullets.push_back(player1.shoot());
@@ -378,6 +402,15 @@ void processGameInput(GLFWwindow* window) {
         player2.rotateTurret(90 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
         player2.rotateTurret(-90 * deltaTime);
+    
+    // Sound effects
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS ||
+        glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        if (player2.moveChannel == -1) player2.startMoveSound();
+    } else {
+        if (player2.moveChannel != -1) player2.stopMoveSound();
+    }
+
     static bool fireReleased2 = true;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && fireReleased2) {
         bullets.push_back(player2.shoot());
@@ -388,7 +421,7 @@ void processGameInput(GLFWwindow* window) {
 
 void initScene() {
     // Load generic VAOs (cube, sphere, etc.) and textures here
-    dibujaCubo();    // fills gVAO_Cubo
+    dibujarCubo();    // fills gVAO_Cubo
 
     // Position players
     player1.position = glm::vec3(-10.0f, 0.5f, 0.0f);
@@ -441,7 +474,7 @@ void renderScene() {
     dibujarSinRef(transformLoc, colorLoc, arbol2, arbolText);
     dibujarSinRef(transformLoc, colorLoc, arbol3, arbolText);
     dibujarSinRef(transformLoc, colorLoc, arbol4, arbolText);
-    dibujarSinRef(transformLoc, colorLoc, suelo, hierba);
+    dibujarSinRef(transformLoc, colorLoc, suelo, sandText);
     // -----------------------------------------------------------
 
     // Luego el resto de tu renderizado:

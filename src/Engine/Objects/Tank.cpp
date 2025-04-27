@@ -2,6 +2,7 @@
 #include "../../../include/Engine/Objects/Wall.h"
 #include "../../../include/Engine/Objects/Bullet.h"
 #include "../../../include/Engine/Objects/Object.h"      // for VAO handles
+#include "../../../include/Engine/AudioManager.h"      // for VAO handles
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -138,10 +139,26 @@ void Tank::rotateTurret(float angle) {
 
 // Disparo según la dirección absoluta de la torreta
 Bullet* Tank::shoot() {
+    AudioManager::get().playSound("shoot");
     glm::vec3 dir = getTurretDirection();
     return new Bullet(this, position + dir * (scale.z + 0.2f), dir);
 }
 
 void Tank::onHit() {
+    AudioManager::get().playSound("hit");
     health--;
+}
+
+
+// Llama a esto cuando comience el movimiento
+void Tank::startMoveSound() {
+    if (moveChannel < 0 || !Mix_Playing(moveChannel)) {
+        moveChannel = AudioManager::get().playLoop("tank");
+    }
+}
+
+// Llama a esto cuando termine el movimiento
+void Tank::stopMoveSound() {
+    AudioManager::get().stopChannel(moveChannel);
+    moveChannel = -1;
 }
