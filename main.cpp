@@ -250,6 +250,30 @@ void openGlInit() {
     glCullFace(GL_BACK); // Oculta las caras traseras (normal que no mira a la camara)
 }
 
+void iluminacion() {
+    // 1) Ambiente
+    int ambColLoc = glGetUniformLocation(shaderProgram, "ambientColor");
+    glUniform3f(ambColLoc, 0.2f, 0.2f, 0.2f); // luz azulada suave
+    int ambStrLoc = glGetUniformLocation(shaderProgram, "ambientStrength");
+    glUniform1f(ambStrLoc, 0.3f);
+
+    // 2) Sol direccional (p. ej. desde arriba y atrás)
+    glm::vec3 sunDir = glm::normalize(glm::vec3(-0.3f, -1.0f, -0.3f));
+    int sunDirLoc = glGetUniformLocation(shaderProgram, "sunDirection");
+    glUniform3fv(sunDirLoc, 1, glm::value_ptr(sunDir));
+    int sunColLoc = glGetUniformLocation(shaderProgram, "sunColor");
+    glUniform3f(sunColLoc, 1.0f, 1.0f, 0.9f); // algo cálido
+
+    /* // 3) Posición de la cámara (para especular)
+    int viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
+    glUniform3fv(viewPosLoc, 1, glm::value_ptr(camera.Position)); */
+
+    // 4) Color del objeto o usar uniform “objectColor”
+    // Lo puedes dejar en (1,1,1) y confiar en la textura.
+    int objColLoc = glGetUniformLocation(shaderProgram, "objectColor");
+    glUniform3f(objColLoc, 1.0f, 1.0f, 1.0f);
+}
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -284,7 +308,7 @@ int main() {
 
     hierba = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
-    //tankText = myCargaTexturas("./assets/textures/tankTexture.png");
+    tankText = myCargaTexturas("./assets/textures/tankTexture.png");
     printf("Tank texture %d\n", tankText);
 
     player1.textureID = tankText;
@@ -302,6 +326,7 @@ int main() {
 
         processGameInput(window);
         updateCamaraPosition(window);
+        iluminacion();
         updateScene();
         renderScene();
         glfwSwapBuffers(window);
