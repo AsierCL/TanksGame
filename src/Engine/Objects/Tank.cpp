@@ -40,7 +40,7 @@ void Tank::draw(unsigned int shaderProgram) {
     chassisM = glm::rotate(chassisM, glm::radians(rotation.y), glm::vec3(0,1,0));
     chassisM = glm::scale(chassisM, scale);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(chassisM));
-    glUniform3f(colorLoc, 0.1f, 0.5f, 0.1f);
+    glUniform3f(colorLoc, 0.3f, 0.3f, 0.3f);
     glBindVertexArray(gVAO_Cubo);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
@@ -57,7 +57,7 @@ void Tank::draw(unsigned int shaderProgram) {
     glm::vec3 tScale = glm::vec3(scale.x * 0.6f, scale.y * 0.4f, scale.z * 0.6f);
     turretM = glm::scale(turretM, tScale);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(turretM));
-    glUniform3f(colorLoc, 0.51f, 0.43f, 0.31f);
+    glUniform3f(colorLoc, 0.5f, 0.9f, 0.3f);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     // 3) Barrel: base on turretM before scaling to get correct offset
@@ -67,7 +67,7 @@ void Tank::draw(unsigned int shaderProgram) {
     barrelM = glm::translate(barrelM, glm::vec3(0.0f, scale.y * 0.5f, 0.0f));
     barrelM = glm::rotate(barrelM, angle, glm::vec3(0,1,0));
     // Move forward from turret center
-    barrelM = glm::translate(barrelM, glm::vec3(0.0f, 0.0f, scale.z * 0.8f));
+    barrelM = glm::translate(barrelM, glm::vec3(0.0f, 0.0f, scale.z * 0.4f));
     // Scale barrel
     barrelM = glm::scale(barrelM, glm::vec3(0.1f, 0.1f, scale.z * 0.5f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(barrelM));

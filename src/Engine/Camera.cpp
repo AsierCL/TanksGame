@@ -27,3 +27,15 @@ void  myCamara() {
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 }
+
+void updateCamaraPosition(GLFWwindow *window) {
+    glm::vec3 cameraDirection = glm::normalize(cameraTarget - cameraPos); // Dirección hacia el objetivo
+    glm::vec3 cameraRight = glm::normalize(glm::cross(cameraDirection, cameraUp)); // Derecha de la cámara
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) { cameraPos += cameraSpeed * cameraDirection; } // Mover la cámara hacia arriba
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) { cameraPos -= cameraSpeed * cameraDirection; } // Mover la cámara hacia abajo
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { cameraPos -= cameraRight * cameraSpeed; } // Mover la cámara hacia la izquierda
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { cameraPos += cameraRight * cameraSpeed; } // Mover la cámara hacia la derecha
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) { cameraPos += cameraSpeed * cameraUp; } // Subir
+    if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS) { cameraPos -= cameraSpeed * cameraUp; } // Bajar
+}

@@ -40,5 +40,6 @@ extern CameraMode cameraMode;
 
 void updateCameraMode();
 void myCamara();
+void updateCamaraPosition(GLFWwindow *window);
 
 #endif // CAMERA_H

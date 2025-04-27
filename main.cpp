@@ -67,7 +67,7 @@ void inicializarVAOs() {
     arbol4.VAO = gVAO_Arbol;
 }
 
-void cuadradoXZ(){
+void dibujarSuelo(){
     glGenVertexArrays(1, &gVAO_Cuadrado);
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -142,7 +142,7 @@ void dibujaEsfera(){
     glBindVertexArray(0);
 }
 
-void dibuajrArbol(){
+void dibujarArbusto(){
     unsigned int VBO, EBO;
 
     glGenVertexArrays(1, &gVAO_Arbol);
@@ -279,8 +279,8 @@ int main() {
     initScene();
     dibujaCubo();
     dibujaEsfera();
-    cuadradoXZ();
-    dibuajrArbol();
+    dibujarSuelo();
+    dibujarArbusto();
 
     hierba = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
@@ -301,7 +301,7 @@ int main() {
         lastFrame = currentFrame;
 
         processGameInput(window);
-        /* Display(); */
+        updateCamaraPosition(window);
         updateScene();
         renderScene();
         glfwSwapBuffers(window);
