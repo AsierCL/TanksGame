@@ -1,4 +1,5 @@
 #include "../../../include/Engine/Objects/Tank.h"
+#include "../../../include/Engine/Objects/Wall.h"
 #include "../../../include/Engine/Objects/Bullet.h"
 #include "../../../include/Engine/Objects/Object.h"      // for VAO handles
 #include <glm/glm.hpp>
@@ -11,6 +12,7 @@
 #include <vector>
 
 extern unsigned int gVAO_Cubo;
+extern std::vector<Wall> walls;
 
 Tank::Tank() : speed(5.0f), health(3), score(0) {
     scale = glm::vec3(2.0f, 1.0f, 3.0f);
@@ -69,8 +71,34 @@ void Tank::draw(unsigned int shaderProgram) {
     glBindVertexArray(0);
 }
 
-void Tank::moveForward(float dt)  { position += turretDirection * speed * dt; }
-void Tank::moveBackward(float dt) { position -= turretDirection * speed * dt; }
+void Tank::moveForward(float dt){
+    glm::vec3 nextPos = position + turretDirection * speed * dt;
+    // crea un AABB temporal
+    glm::vec3 oldPos = position;
+    position = nextPos;
+    // comprueba colisión contra todos los muros
+    for (auto &w : walls) {
+        if (this->intersects(w)) {
+            position = oldPos; // revierte
+            break;
+        }
+    }
+}
+
+void Tank::moveBackward(float dt){
+    glm::vec3 nextPos = position - turretDirection * speed * dt;
+    // crea un AABB temporal
+    glm::vec3 oldPos = position;
+    position = nextPos;
+    // comprueba colisión contra todos los muros
+    for (auto &w : walls) {
+        if (this->intersects(w)) {
+            position = oldPos; // revierte
+            break;
+        }
+    }
+}
+
 void Tank::rotateTurret(float angle) {
     glm::mat4 R = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0,1,0));
     turretDirection = glm::vec3(R * glm::vec4(turretDirection, 0.0f));

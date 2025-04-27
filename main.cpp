@@ -388,6 +388,13 @@ void updateScene() {
         Bullet* b = *it;
         b->update(deltaTime);
         bool remove = !b->isAlive();
+        // Hit on walls
+        for (auto &w : walls) {
+            if (!remove && b->intersects(w)) {
+                remove = true;
+                break;
+            }
+        }
         // Check hit on other tank
         Tank& target = (b->owner == &player1) ? player2 : player1;
         if (!remove && b->intersects(target)) {
