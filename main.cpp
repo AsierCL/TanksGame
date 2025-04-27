@@ -51,6 +51,7 @@ unsigned int gVAO_Arbol = 0;
 int hierba;
 int arbolText;
 int tankText;
+int wallText;
 
 // Objetos
 objeto suelo = {0, 0, 0, 0, 0, 0, 100, 1, 100, {.282, .639, .329},36, gVAO_Cuadrado, 0};
@@ -264,9 +265,9 @@ void iluminacion() {
     int sunColLoc = glGetUniformLocation(shaderProgram, "sunColor");
     glUniform3f(sunColLoc, 1.0f, 1.0f, 0.9f); // algo cálido
 
-    /* // 3) Posición de la cámara (para especular)
+    // 3) Posición de la cámara (para especular)
     int viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
-    glUniform3fv(viewPosLoc, 1, glm::value_ptr(camera.Position)); */
+    glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos));
 
     // 4) Color del objeto o usar uniform “objectColor”
     // Lo puedes dejar en (1,1,1) y confiar en la textura.
@@ -309,10 +310,12 @@ int main() {
     hierba = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
     tankText = myCargaTexturas("./assets/textures/tankTexture.png");
+    wallText = myCargaTexturas("./assets/textures/wallTexture.png");
     printf("Tank texture %d\n", tankText);
 
     player1.textureID = tankText;
-    
+    walls[0].textureID = wallText;
+
     // Asignamos los VAOs a los objetos
     inicializarVAOs();
     if(cameraMode == EXTERIOR){

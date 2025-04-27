@@ -18,7 +18,7 @@ void updateCameraMode() {
 // Configuracion de la camara
 void  myCamara() {
     // Matriz de proyeccion (perspectiva)
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH/(float)SCR_HEIGHT, 1.0f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH/(float)SCR_HEIGHT, 1.0f, 300.0f);
     unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -36,6 +36,6 @@ void updateCamaraPosition(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) { cameraPos -= cameraSpeed * cameraDirection; } // Mover la cámara hacia abajo
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) { cameraPos -= cameraRight * cameraSpeed; } // Mover la cámara hacia la izquierda
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) { cameraPos += cameraRight * cameraSpeed; } // Mover la cámara hacia la derecha
-    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) { cameraPos += cameraSpeed * cameraUp; } // Subir
-    if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS) { cameraPos -= cameraSpeed * cameraUp; } // Bajar
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS) { cameraPos += cameraSpeed * cameraUp; } // Subir
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) { cameraPos -= cameraSpeed * cameraUp; } // Bajar
 }

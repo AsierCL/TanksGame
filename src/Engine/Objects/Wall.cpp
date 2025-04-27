@@ -26,6 +26,10 @@ void Wall::draw(unsigned int shaderProgram) {
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
 
+    if (textureID != 0) {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+    }
+
     // Construir matriz de modelo: traslación + escala
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position);
