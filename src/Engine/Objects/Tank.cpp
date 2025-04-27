@@ -28,12 +28,10 @@ void Tank::update(float dt) {
 void Tank::draw(unsigned int shaderProgram) {
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
-    //printf("Tank texture %d\n", textureID);
 
     // 1) Chassis
-    if(textureID != 0) {
+    if (textureID != 0) {
         glBindTexture(GL_TEXTURE_2D, textureID);
-        printf("Tank texture %d\n", textureID);
     }
     glm::mat4 chassisM = glm::mat4(1.0f);
     chassisM = glm::translate(chassisM, position);
@@ -44,31 +42,29 @@ void Tank::draw(unsigned int shaderProgram) {
     glBindVertexArray(gVAO_Cubo);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-    // 2) Turret: build from scratch to avoid compounded scaling
+    // Compute turret absolute yaw (base + offset)
+    float totalYaw = rotation.y + turretOffset;
+    float turretRad = glm::radians(totalYaw);
+
+    // 2) Turret
     glm::mat4 turretM = glm::mat4(1.0f);
     turretM = glm::translate(turretM, position);
     turretM = glm::rotate(turretM, glm::radians(rotation.y), glm::vec3(0,1,0));
-    // Move up by half chassis height
     turretM = glm::translate(turretM, glm::vec3(0.0f, scale.y * 0.5f, 0.0f));
-    // Rotate turret according to direction
-    float angle = glm::atan(turretDirection.x, turretDirection.z);
-    turretM = glm::rotate(turretM, angle, glm::vec3(0,1,0));
-    // Scale turret relative to chassis
+    turretM = glm::rotate(turretM, turretRad - glm::radians(rotation.y), glm::vec3(0,1,0));
     glm::vec3 tScale = glm::vec3(scale.x * 0.6f, scale.y * 0.4f, scale.z * 0.6f);
     turretM = glm::scale(turretM, tScale);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(turretM));
     glUniform3f(colorLoc, 0.5f, 0.9f, 0.3f);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-    // 3) Barrel: base on turretM before scaling to get correct offset
+    // 3) Barrel
     glm::mat4 barrelM = glm::mat4(1.0f);
     barrelM = glm::translate(barrelM, position);
     barrelM = glm::rotate(barrelM, glm::radians(rotation.y), glm::vec3(0,1,0));
     barrelM = glm::translate(barrelM, glm::vec3(0.0f, scale.y * 0.5f, 0.0f));
-    barrelM = glm::rotate(barrelM, angle, glm::vec3(0,1,0));
-    // Move forward from turret center
+    barrelM = glm::rotate(barrelM, turretRad - glm::radians(rotation.y), glm::vec3(0,1,0));
     barrelM = glm::translate(barrelM, glm::vec3(0.0f, 0.0f, scale.z * 0.4f));
-    // Scale barrel
     barrelM = glm::scale(barrelM, glm::vec3(0.1f, 0.1f, scale.z * 0.5f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(barrelM));
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -76,41 +72,74 @@ void Tank::draw(unsigned int shaderProgram) {
     glBindVertexArray(0);
 }
 
-void Tank::moveForward(float dt){
-    glm::vec3 nextPos = position + turretDirection * speed * dt;
-    // crea un AABB temporal
+// En Tank.h, añade dentro de la clase:
+float turretOffset = 0.0f;  // ángulo relativo de la torreta respecto a la base
+
+// Función auxiliar para obtener el vector “adelante” de la base
+glm::vec3 Tank::getForward() const {
+    float yawRad = glm::radians(rotation.y);
+    return glm::normalize(glm::vec3(
+        glm::sin(yawRad),
+        0.0f,
+        glm::cos(yawRad)
+    ));
+}
+
+// Función auxiliar para obtener la dirección absoluta de la torreta
+glm::vec3 Tank::getTurretDirection() const {
+    float totalYaw = rotation.y + turretOffset;
+    float yawRad   = glm::radians(totalYaw);
+    return glm::normalize(glm::vec3(
+        glm::sin(yawRad),
+        0.0f,
+        glm::cos(yawRad)
+    ));
+}
+
+// Avanzar según la base
+void Tank::moveForward(float dt) {
     glm::vec3 oldPos = position;
-    position = nextPos;
-    // comprueba colisión contra todos los muros
+    position += getForward() * speed * dt;
     for (auto &w : walls) {
         if (this->intersects(w)) {
-            position = oldPos; // revierte
+            position = oldPos;
             break;
         }
     }
 }
 
-void Tank::moveBackward(float dt){
-    glm::vec3 nextPos = position - turretDirection * speed * dt;
-    // crea un AABB temporal
+// Retroceder según la base
+void Tank::moveBackward(float dt) {
     glm::vec3 oldPos = position;
-    position = nextPos;
-    // comprueba colisión contra todos los muros
+    position -= getForward() * speed * dt;
     for (auto &w : walls) {
         if (this->intersects(w)) {
-            position = oldPos; // revierte
+            position = oldPos;
             break;
         }
     }
 }
 
+// Girar la base sin tocar el offset de la torreta
+void Tank::rotateLeft(float angle) {
+    rotation.y = fmod(rotation.y + angle + 360.0f, 360.0f);
+    // la torreta no cambia su offset, sigue apuntando a rotation.y + turretOffset
+}
+
+// Girar la base hacia la derecha
+void Tank::rotateRight(float angle) {
+    rotation.y = fmod(rotation.y - angle + 360.0f, 360.0f);
+}
+
+// Girar la torreta de forma independiente
 void Tank::rotateTurret(float angle) {
-    glm::mat4 R = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0,1,0));
-    turretDirection = glm::vec3(R * glm::vec4(turretDirection, 0.0f));
+    turretOffset = fmod(turretOffset + angle, 360.0f);
 }
 
+// Disparo según la dirección absoluta de la torreta
 Bullet* Tank::shoot() {
-    return new Bullet(this, position + turretDirection * (scale.z + 0.5f), turretDirection);
+    glm::vec3 dir = getTurretDirection();
+    return new Bullet(this, position + dir * (scale.z + 0.2f), dir);
 }
 
 void Tank::onHit() {

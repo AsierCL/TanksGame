@@ -317,31 +317,39 @@ int main() {
 }
 
 void processGameInput(GLFWwindow* window) {
-    // Tank 1 controls: WASD + Q/E to rotate turret + Space to fire
+    // Tank 1 controls: WASD + Q/E to rotate turret + X to fire
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         player1.moveForward(deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         player1.moveBackward(deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         player1.rotateTurret(-90 * deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         player1.rotateTurret( 90 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        player1.rotateLeft(90 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        player1.rotateRight(90 * deltaTime);
     static bool fireReleased1 = true;
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && fireReleased1) {
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && fireReleased1) {
         bullets.push_back(player1.shoot());
         fireReleased1 = false;
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) fireReleased1 = true;
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_RELEASE) fireReleased1 = true;
 
-    // Tank 2 controls: IJKL + U/O + RightShift to fire
+    // Tank 2 controls: IJKL + U/O + M to fire
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
         player2.moveForward(deltaTime);
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         player2.moveBackward(deltaTime);
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        player2.rotateTurret(-90 * deltaTime);
+        player2.rotateLeft(90 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        player2.rotateTurret( 90 * deltaTime);
+        player2.rotateRight( 90 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        player2.rotateTurret(90 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        player2.rotateTurret(-90 * deltaTime);
     static bool fireReleased2 = true;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && fireReleased2) {
         bullets.push_back(player2.shoot());
