@@ -9,6 +9,8 @@ public:
     glm::vec3 rotation;
     glm::vec3 scale;
 
+    unsigned int textureID;  // ID de la textura (puede ser 0 si no hay textura)
+
     GameObject();
     virtual ~GameObject();
 

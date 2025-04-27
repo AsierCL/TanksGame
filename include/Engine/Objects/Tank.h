@@ -17,6 +17,7 @@ public:
 
     void update(float dt) override;
     void draw(unsigned int shaderProgram) override;
+    void draw(unsigned int shaderProgram, unsigned int textureID);
 
     void moveForward(float dt);
     void moveBackward(float dt);

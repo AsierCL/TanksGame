@@ -28,8 +28,13 @@ void Tank::update(float dt) {
 void Tank::draw(unsigned int shaderProgram) {
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
+    //printf("Tank texture %d\n", textureID);
 
     // 1) Chassis
+    if(textureID != 0) {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        printf("Tank texture %d\n", textureID);
+    }
     glm::mat4 chassisM = glm::mat4(1.0f);
     chassisM = glm::translate(chassisM, position);
     chassisM = glm::rotate(chassisM, glm::radians(rotation.y), glm::vec3(0,1,0));

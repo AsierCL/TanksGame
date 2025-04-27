@@ -50,6 +50,7 @@ unsigned int gVAO_Arbol = 0;
 // Texturas
 int hierba;
 int arbolText;
+int tankText;
 
 // Objetos
 objeto suelo = {0, 0, 0, 0, 0, 0, 100, 1, 100, {.282, .639, .329},36, gVAO_Cuadrado, 0};
@@ -249,24 +250,6 @@ void openGlInit() {
     glCullFace(GL_BACK); // Oculta las caras traseras (normal que no mira a la camara)
 }
 
-/* void Display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(shaderProgram);
-    myCamara();
-    // Las buscamos en el shader
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "model");
-    unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
-
-    //iluminacion();
-    dibujarSinRef(transformLoc, colorLoc, arbol1, arbolText);
-    dibujarSinRef(transformLoc, colorLoc, arbol2, arbolText);
-    dibujarSinRef(transformLoc, colorLoc, arbol3, arbolText);
-    dibujarSinRef(transformLoc, colorLoc, arbol4, arbolText);
-    dibujarSinRef(transformLoc, colorLoc, suelo, hierba);
-
-    glBindVertexArray(0);
-}*/
-
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -299,9 +282,12 @@ int main() {
     cuadradoXZ();
     dibuajrArbol();
 
-    hierba = myCargaTexturas("./assets/textures/baseGrass.jpeg");
+    hierba = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
+    //tankText = myCargaTexturas("./assets/textures/tankTexture.png");
+    printf("Tank texture %d\n", tankText);
 
+    player1.textureID = tankText;
     
     // Asignamos los VAOs a los objetos
     inicializarVAOs();
@@ -367,7 +353,6 @@ void processGameInput(GLFWwindow* window) {
 void initScene() {
     // Load generic VAOs (cube, sphere, etc.) and textures here
     dibujaCubo();    // fills gVAO_Cubo
-    dibujaEsfera();  // if needed
 
     // Position players
     player1.position = glm::vec3(-10.0f, 0.5f, 0.0f);

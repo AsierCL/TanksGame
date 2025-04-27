@@ -1,7 +1,7 @@
 #include "../../../include/Engine/Objects/GameObject.h"
 
 GameObject::GameObject()
-    : position(0.0f), rotation(0.0f), scale(1.0f) {}
+    : position(0.0f), rotation(0.0f), scale(1.0f), textureID(0) {}
 
 GameObject::~GameObject() {}
 bool GameObject::intersects(const GameObject& other) const {
