@@ -53,6 +53,7 @@ int sandText;
 int arbolText;
 int tankText;
 int wallText;
+int turretText;
 
 // Objetos
 objeto suelo = {0, 0, 0, 0, 0, 0, 100, 1, 100, {.282, .639, .329},36, gVAO_Cuadrado, 0};
@@ -317,6 +318,7 @@ int main() {
     AudioManager::get().loadSound("shoot", "./assets/audio/shoot.wav");
     AudioManager::get().loadSound("tank", "./assets/audio/tank-moving.wav");
     AudioManager::get().loadMusic("bgm", "./assets/audio/bgSound.wav");
+    AudioManager::get().loadMusic("turret", "./assets/audio/turret.wav");
 
     AudioManager::get().playMusic("bgm", -1);  // bucle infinito
     // opcional: ajustar volumen [0..MIX_MAX_VOLUME]
@@ -374,12 +376,18 @@ void processGameInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         player1.rotateRight(90 * deltaTime);
 
-    // Sound effects
+    // Sound effects //
+    // Play sound if moving
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         if (player1.moveChannel == -1) player1.startMoveSound();
     } else {
         if (player1.moveChannel != -1) player1.stopMoveSound();
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        if (player1.turretChannel == -1) player1.startTurretSound();
+    } else {
+        if (player1.turretChannel != -1) player1.stopTurretSound();
     }
 
     static bool fireReleased1 = true;
@@ -403,7 +411,8 @@ void processGameInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
         player2.rotateTurret(-90 * deltaTime);
     
-    // Sound effects
+    // Sound effects //
+    // Play sound if moving
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
         if (player2.moveChannel == -1) player2.startMoveSound();

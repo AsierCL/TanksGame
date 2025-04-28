@@ -162,3 +162,14 @@ void Tank::stopMoveSound() {
     AudioManager::get().stopChannel(moveChannel);
     moveChannel = -1;
 }
+
+void Tank::startTurretSound() {
+    if (moveChannel < 0 || !Mix_Playing(turretChannel)) {
+        moveChannel = AudioManager::get().playLoop("turret");
+    }
+}
+
+void Tank::stopTurretSound() {
+    AudioManager::get().stopChannel(turretChannel);
+    turretChannel = -1;
+}

@@ -11,14 +11,17 @@ public:
     int health;
     int score;
     float turretOffset;
-    int   moveChannel = -1;    // canal SDL_mixer donde suena el “move”
+    int moveChannel = -1;    // canal SDL_mixer donde suena el “move”
+    int turretChannel = -1;    // canal SDL_mixer donde suena el “move”
     glm::vec3 turretDirection;
 
     Tank();
     ~Tank();
 
-    void  startMoveSound();
-    void  stopMoveSound();
+    void startMoveSound();
+    void stopMoveSound();
+    void startTurretSound();
+    void stopTurretSound();
     void update(float dt) override;
     void draw(unsigned int shaderProgram) override;
     void draw(unsigned int shaderProgram, unsigned int textureID);
@@ -28,7 +31,7 @@ public:
     void moveForward(float dt);
     void moveBackward(float dt);
     void rotateLeft(float angle);
-    void rotateRight(float angle);
+    void rotateRight(float angle);// Sound effects
     void rotateTurret(float angle);
     Bullet* shoot();
     void onHit();
