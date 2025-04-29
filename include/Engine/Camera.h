@@ -17,8 +17,8 @@
 #include "../Engine/Objects/Object.h"
 
 // SCREEN SIZE
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_WIDTH = 1900;
+const unsigned int SCR_HEIGHT = 1000;
 
 // CAMERA POSITION
 extern glm::vec3 cameraPos;
