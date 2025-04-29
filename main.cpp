@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <random>
 
 #include "./include/Engine/Camera.h"
 #include "./include/Engine/Shaders.h"
@@ -60,6 +61,7 @@ int myCargaTexturas(const char* nome) {
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) ;
    
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(1);
     unsigned char* data = stbi_load(nome, &width, &height, &nrChannels, 0);
     if (data){
         if (nrChannels == 3){ glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);}
@@ -68,7 +70,6 @@ int myCargaTexturas(const char* nome) {
         printf("Formato de textura no soportado: %d canales", nrChannels);
     }
     stbi_image_free(data);
-    stbi_set_flip_vertically_on_load(1);
     return (textura);
 }
 
@@ -188,13 +189,43 @@ int main() {
     return 0;
 }
 
-void initScene() {
-    // Load generic VAOs (cube, sphere, etc.) and textures here
-    dibujarCubo();    // fills gVAO_Cubo
-    ///////////////////////////
-    /// CREO QUE ESTO SOBRA ///                  /////////////////// BORRARR
-    ///////////////////////////
+void initMuros() {
+    const int numMuros = 20; // Número de muros aleatorios
+    const float distanciaMinimaJugadores = 20.0f;
+    const float areaMin = -40.0f;
+    const float areaMax = 40.0f;
+    const float largoMin = 2.0f;
+    const float largoMax = 12.0f;
+    const float heightMin = 2.0f;
+    const float heightMax = 6.0f;
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> posDist(areaMin, areaMax);
+    std::uniform_real_distribution<float> sizeDist(largoMin, largoMax);
+    std::uniform_real_distribution<float> heightDist(heightMin, heightMax);
+    std::uniform_int_distribution<int> rotDist(0, 1); // 0 = horizontal, 1 = vertical
+
+    for (int i = 0; i < numMuros; ++i) {
+        glm::vec3 pos;
+        float largo;
+        float alto = 4.0f;
+        float rot;
+
+        do {
+            pos.x = posDist(gen);
+            pos.z = posDist(gen);
+        } while (glm::distance(pos, player1.position) < distanciaMinimaJugadores || 
+                 glm::distance(pos, player2.position) < distanciaMinimaJugadores);
+
+        largo = sizeDist(gen);
+        rot = rotDist(gen) == 0 ? 0.0f : 90.0f;
+
+        walls.emplace_back(glm::vec3(pos.x, 0.0f, pos.z), largo, alto, rot);
+    }
+}
+
+void initScene() {
     // Position players
     player1.position = glm::vec3(-10.0f, 0.5f, 0.0f);
     player1.rotation = glm::vec3(0.0f);
@@ -202,10 +233,11 @@ void initScene() {
     player2.rotation = glm::vec3(180.0f, 1.0f, 0.0f);
 
     // Create a perimeter wall
-    walls.emplace_back(glm::vec3(0.0f, 0.0f, -20.0f), 10.0f, 10.0f);
-    walls.emplace_back(glm::vec3(0.0f, 0.0f,  20.0f), 10.0f, 10.0f);
-    walls.emplace_back(glm::vec3(-20.0f, 0.0f, 0.0f), 1.0f, 40.0f);
-    walls.emplace_back(glm::vec3( 20.0f, 0.0f, 0.0f), 1.0f, 40.0f);
+    walls.emplace_back(glm::vec3(0.0f, 0.0f, 50.0f), 100.0f, 10.0f, 0.0f);
+    walls.emplace_back(glm::vec3(0.0f, 0.0f, -50.0f), 100.0f, 10.0f, 0.0f);
+    walls.emplace_back(glm::vec3(50.0f, 0.0f, 0.0f), 100.0f, 10.0f, 90.0f);
+    walls.emplace_back(glm::vec3(-50.0f, 0.0f, 0.0f), 100.0f, 10.0f, 90.0f);
+    initMuros();
 }
 
 void updateScene() {

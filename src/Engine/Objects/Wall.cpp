@@ -10,9 +10,11 @@
 
 extern unsigned int gVAO_Cubo;
 
-Wall::Wall(const glm::vec3& pos, float w, float h) : width(w), height(h) {
+Wall::Wall(const glm::vec3& pos, float w, float h, float angle)
+    : width(w), height(h) {
     position = pos;
     scale = glm::vec3(width, height, 1.0f);
+    rotation = glm::vec3(0.0f, angle, 0.0f);  // Rotación solo sobre Z
 }
 
 Wall::~Wall() {}
@@ -33,6 +35,7 @@ void Wall::draw(unsigned int shaderProgram) {
     // Construir matriz de modelo: traslación + escala
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::scale(model, scale);
 
     // Enviar matriz y color al shader

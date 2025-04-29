@@ -7,7 +7,7 @@ class Wall : public GameObject {
 public:
     float width, height;
 
-    Wall(const glm::vec3& pos, float w, float h);
+    Wall(const glm::vec3& pos, float w, float h, float angle = 0.0f);
     ~Wall();
 
     void update(float dt) override;
