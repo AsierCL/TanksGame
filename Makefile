@@ -12,12 +12,8 @@ LIBS = -lglfw -lGL -ldl -lm -lSDL2 -lSDL2_mixer
 # Ficheros fuente
 SRC = \
     main.cpp \
-    src/Engine/Camera.cpp \
-    src/Engine/Shaders.cpp \
-    src/Engine/Objects/Bullet.cpp \
-    src/Engine/Objects/GameObject.cpp \
-    src/Engine/Objects/Tank.cpp \
-    src/Engine/Objects/Wall.cpp \
+    $(wildcard src/Engine/*.cpp) \
+    $(wildcard src/Engine/Objects/*.cpp) \
     src/Utils/glad.c
 
 # Archivos objeto generados

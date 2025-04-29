@@ -1,5 +1,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
+#pragma once
 
 typedef struct {
     float px, py, pz;       // initial position
