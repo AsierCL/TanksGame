@@ -31,9 +31,7 @@ void Tank::draw(unsigned int shaderProgram) {
     unsigned int colorLoc = glGetUniformLocation(shaderProgram, "Color");
 
     // 1) Chassis
-    if (textureID != 0) {
-        glBindTexture(GL_TEXTURE_2D, textureID);
-    }
+    glBindTexture(GL_TEXTURE_2D, tankTextureID);
     glm::mat4 chassisM = glm::mat4(1.0f);
     chassisM = glm::translate(chassisM, position);
     chassisM = glm::rotate(chassisM, glm::radians(rotation.y), glm::vec3(0,1,0));
@@ -48,6 +46,7 @@ void Tank::draw(unsigned int shaderProgram) {
     float turretRad = glm::radians(totalYaw);
 
     // 2) Turret
+    glBindTexture(GL_TEXTURE_2D, turretTextureID);
     glm::mat4 turretM = glm::mat4(1.0f);
     turretM = glm::translate(turretM, position);
     turretM = glm::rotate(turretM, glm::radians(rotation.y), glm::vec3(0,1,0));
@@ -141,7 +140,7 @@ void Tank::rotateTurret(float angle) {
 Bullet* Tank::shoot() {
     AudioManager::get().playSound("shoot");
     glm::vec3 dir = getTurretDirection();
-    return new Bullet(this, position + dir * (scale.z + 0.2f), dir);
+    return new Bullet(this, position + dir * (scale.z + 0.2f), dir, bulletTextureID);
 }
 
 void Tank::onHit() {

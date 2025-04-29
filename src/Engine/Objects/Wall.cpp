@@ -1,4 +1,5 @@
 #include "../../../include/Engine/Objects/Wall.h"
+#include "../../../include/Engine/AudioManager.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -46,4 +47,8 @@ void Wall::draw(unsigned int shaderProgram) {
     glBindVertexArray(gVAO_Cubo);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+}
+
+void Wall::onHit() {
+    AudioManager::get().playSound("wall");
 }

@@ -35,6 +35,10 @@ public:
     void rotateTurret(float angle);
     Bullet* shoot();
     void onHit();
+
+    unsigned int tankTextureID = 0;
+    unsigned int turretTextureID = 0;
+    unsigned int bulletTextureID = 0;
 };
 
 #endif // TANK_H

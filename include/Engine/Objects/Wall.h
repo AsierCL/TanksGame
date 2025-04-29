@@ -12,6 +12,7 @@ public:
 
     void update(float dt) override;
     void draw(unsigned int shaderProgram) override;
+    void onHit();
 };
 
 #endif // WALL_H

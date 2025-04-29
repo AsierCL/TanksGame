@@ -47,6 +47,7 @@ int arbolText;
 int tankText;
 int wallText;
 int turretText;
+int bulletText;
 
 
 int myCargaTexturas(const char* nome) {
@@ -145,8 +146,9 @@ int main() {
     AudioManager::get().loadSound("hit",   "./assets/audio/hit.wav");
     AudioManager::get().loadSound("shoot", "./assets/audio/shoot.wav");
     AudioManager::get().loadSound("tank", "./assets/audio/tank-moving.wav");
+    AudioManager::get().loadSound("turret", "./assets/audio/turret.wav");
+    AudioManager::get().loadSound("wall", "./assets/audio/wallHit.wav");
     AudioManager::get().loadMusic("bgm", "./assets/audio/bgSound.wav");
-    AudioManager::get().loadMusic("turret", "./assets/audio/turret.wav");
 
     AudioManager::get().playMusic("bgm", -1);  // bucle infinito
     // opcional: ajustar volumen [0..MIX_MAX_VOLUME]
@@ -156,9 +158,15 @@ int main() {
     arbolText = myCargaTexturas("./assets/textures/a.png");
     tankText = myCargaTexturas("./assets/textures/tankTexture.png");
     wallText = myCargaTexturas("./assets/textures/wallTexture.png");
-    printf("Tank texture %d\n", tankText);
+    turretText = myCargaTexturas("./assets/textures/turretTexture.png");
+    bulletText = myCargaTexturas("./assets/textures/bulletTexture.png");
 
-    player1.textureID = tankText;
+    player1.tankTextureID = tankText;
+    player2.tankTextureID = tankText;
+    player1.turretTextureID = turretText;
+    player2.turretTextureID = turretText;
+    player1.bulletTextureID = bulletText;
+    player2.bulletTextureID = bulletText;
     walls[0].textureID = wallText;
 
     // Asignamos los VAOs a los objetos
@@ -249,6 +257,7 @@ void updateScene() {
         // Hit on walls
         for (auto &w : walls) {
             if (!remove && b->intersects(w)) {
+                w.onHit();
                 remove = true;
                 break;
             }
