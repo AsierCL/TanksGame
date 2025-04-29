@@ -70,7 +70,7 @@ void inicializarVAOs() {
     arbol4.VAO = gVAO_Arbol;
 }
 
-void dibujarSuelo(){
+void dibujarSuelo() {
     glGenVertexArrays(1, &gVAO_Cuadrado);
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -124,7 +124,7 @@ void dibujarCubo() {
     glBindVertexArray(0);
 }
 
-void dibujarEsfera(){
+void dibujarEsfera() {
     glGenVertexArrays(1, &gVAO_Esfera);
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -145,7 +145,7 @@ void dibujarEsfera(){
     glBindVertexArray(0);
 }
 
-void dibujarArbusto(){
+void dibujarArbusto() {
     unsigned int VBO, EBO;
 
     glGenVertexArrays(1, &gVAO_Arbol);
@@ -221,7 +221,7 @@ void dibujarSinRef(unsigned int transformLoc, unsigned int colorLoc, objeto obj,
     glBindVertexArray(0);
 }
 
-int myCargaTexturas (const char* nome) {
+int myCargaTexturas(const char* nome) {
     GLuint textura;
     glGenTextures (1, &textura);
     glBindTexture(GL_TEXTURE_2D, textura); 
@@ -283,7 +283,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Grua con OpenGL 3.3       :)", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Tank Game OPENGL, Asier Cabo", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create window" << std::endl;
         glfwTerminate();
@@ -439,8 +439,8 @@ void initScene() {
     player2.rotation = glm::vec3(180.0f, 1.0f, 0.0f);
 
     // Create a perimeter wall
-    walls.emplace_back(glm::vec3(0.0f, 0.0f, -20.0f), 40.0f, 1.0f);
-    walls.emplace_back(glm::vec3(0.0f, 0.0f,  20.0f), 40.0f, 1.0f);
+    walls.emplace_back(glm::vec3(0.0f, 0.0f, -20.0f), 10.0f, 10.0f);
+    walls.emplace_back(glm::vec3(0.0f, 0.0f,  20.0f), 10.0f, 10.0f);
     walls.emplace_back(glm::vec3(-20.0f, 0.0f, 0.0f), 1.0f, 40.0f);
     walls.emplace_back(glm::vec3( 20.0f, 0.0f, 0.0f), 1.0f, 40.0f);
 }
