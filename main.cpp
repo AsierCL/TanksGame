@@ -8,6 +8,7 @@
 #include "./include/Engine/Camera.h"
 #include "./include/Engine/Shaders.h"
 #include "./include/Engine/AudioManager.h"
+#include "./include/Engine/AudioInit.h"
 #include "./include/Engine/Draw.h"
 #include "./include/Engine/Objects/Bullet.h"
 #include "./include/Engine/Objects/Skybox.h"
@@ -147,16 +148,7 @@ int main() {
         return -1;
     }
     
-    AudioManager::get().loadSound("hit",   "./assets/audio/hit.wav");
-    AudioManager::get().loadSound("shoot", "./assets/audio/shoot.wav");
-    AudioManager::get().loadSound("tank", "./assets/audio/tank-moving.wav");
-    AudioManager::get().loadSound("turret", "./assets/audio/turret.wav");
-    AudioManager::get().loadSound("wall", "./assets/audio/wallHit.wav");
-    AudioManager::get().loadMusic("bgm", "./assets/audio/bgSound.wav");
-
-    AudioManager::get().playMusic("bgm", -1);  // bucle infinito
-    // opcional: ajustar volumen [0..MIX_MAX_VOLUME]
-    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+    initAudio();
 
     sandText = myCargaTexturas("./assets/textures/sandTexture.png");
     arbolText = myCargaTexturas("./assets/textures/a.png");
@@ -312,7 +304,7 @@ void renderScene() {
     player2.draw(shaderProgram);
     for (auto b : bullets)  b->draw(shaderProgram);
     
-    skybox.draw();
+    //skybox.draw();
 
     glBindVertexArray(0);
 }

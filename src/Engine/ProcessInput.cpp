@@ -81,4 +81,10 @@ void processGameInput(GLFWwindow* window) {
         fireReleased2 = false;
     }
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) fireReleased2 = true;
+
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        if (player2.turretChannel == -1) player2.startTurretSound();
+    } else {
+        if (player2.turretChannel != -1) player2.stopTurretSound();
+    }
 }
