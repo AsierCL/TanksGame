@@ -14,15 +14,12 @@
 #include "./include/Engine/Objects/Skybox.h"
 #include "./include/Engine/Objects/Tank.h"
 #include "./include/Engine/Objects/Wall.h"
-#include "./include/Utils/stb_image.h"
 
 // Transform helpers
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "./Utils/stb_image.h"
 
 // Globals
 extern GLuint shaderProgram;
@@ -34,6 +31,9 @@ Tank player1, player2;
 std::vector<Bullet*> bullets;
 std::vector<Wall> walls;
 
+// Textures
+extern int sandText, arbolText, tankText, wallText, turretText, bulletText;
+
 // Prototypes
 double getTime() { return glfwGetTime(); }
 void initScene();
@@ -42,34 +42,8 @@ void updateScene();
 void renderScene();
 extern GLuint setShaders(const char *nVertx, const char *nFrag);
 
-// Texturas
-int sandText, arbolText, tankText, wallText, turretText, bulletText;
 Skybox skybox;
 
-
-int myCargaTexturas(const char* nome) {
-    GLuint textura;
-    glGenTextures (1, &textura);
-    glBindTexture(GL_TEXTURE_2D, textura); 
-    
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) ;
-   
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(1);
-    unsigned char* data = stbi_load(nome, &width, &height, &nrChannels, 0);
-    if (data){
-        if (nrChannels == 3){ glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);}
-        if( nrChannels == 4){ glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);}
-    }else{
-        printf("Formato de textura no soportado: %d canales", nrChannels);
-    }
-    stbi_image_free(data);
-    return (textura);
-}
 
 void openGlInit() {
     glClearDepth(1.0f); // Buffer de profundidad
@@ -129,9 +103,9 @@ void initScene() {
     skybox.add_cubemap_image(faces);
 
     // Position players
-    player1.position = glm::vec3(-30.0f, 0.5f, 0.0f);
+    player1.position = glm::vec3(-20.0f, 0.5f, 0.0f);
     player1.rotation = glm::vec3(0.0f);
-    player2.position = glm::vec3(30.0f, 0.5f, 0.0f);
+    player2.position = glm::vec3(20.0f, 0.5f, 0.0f);
     player2.rotation = glm::vec3(180.0f, 1.0f, 0.0f);
 
     // Create a perimeter wall
@@ -140,6 +114,10 @@ void initScene() {
     walls.emplace_back(glm::vec3(50.0f, 0.0f, 0.0f), 100.0f, 10.0f, 90.0f);
     walls.emplace_back(glm::vec3(-50.0f, 0.0f, 0.0f), 100.0f, 10.0f, 90.0f);
     initMuros();
+    dibujarCubo();
+    dibujarEsfera();
+    dibujarSuelo();
+    dibujarArbusto();
 }
 
 void updateScene() {
@@ -224,24 +202,9 @@ int main() {
 
     // Initialize scene: VAOs, textures, tanks, walls...
     initScene();
-    dibujarCubo();
-    dibujarEsfera();
-    dibujarSuelo();
-    dibujarArbusto();
-
-    if (!AudioManager::get().init()) {
-        std::cerr << "No se pudo inicializar audio\n";
-        return -1;
-    }
-    
     initAudio();
+    initTextures();
 
-    sandText = myCargaTexturas("./assets/textures/sandTexture.png");
-    arbolText = myCargaTexturas("./assets/textures/a.png");
-    tankText = myCargaTexturas("./assets/textures/tankTexture.png");
-    wallText = myCargaTexturas("./assets/textures/wallTexture.png");
-    turretText = myCargaTexturas("./assets/textures/turretTexture.png");
-    bulletText = myCargaTexturas("./assets/textures/bulletTexture.png");
 
     player1.tankTextureID = tankText;
     player2.tankTextureID = tankText;

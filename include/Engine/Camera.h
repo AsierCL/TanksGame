@@ -13,7 +13,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../Engine/Shaders.h"
 #include "../Engine/Objects/Object.h"
 
 // SCREEN SIZE

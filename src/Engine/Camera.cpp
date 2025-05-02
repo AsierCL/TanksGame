@@ -1,4 +1,5 @@
 #include "../../include/Engine/Camera.h"
+#include "../../include/Engine/Shaders.h"
 
 // CAMERA POSITION
 glm::vec3 cameraPos = glm::vec3(200.0f, 200.0f, 200.0f); // Posición inicial de la cámara

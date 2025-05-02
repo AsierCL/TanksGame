@@ -22,7 +22,11 @@ extern bool isNightMode;
 extern GLuint shaderProgram;
 extern GLuint shaderSkybox;
 
+extern int sandText, arbolText, tankText, wallText, turretText, bulletText;
+
 void toggleNightMode();
 void iluminacion();
+int myCargaTexturas(const char* nome);
+void initTextures();
 
 #endif // SHADERS.H
