@@ -9,8 +9,9 @@
 #include "./include/Engine/Shaders.h"
 #include "./include/Engine/AudioManager.h"
 #include "./include/Engine/Draw.h"
-#include "./include/Engine/Objects/Tank.h"
 #include "./include/Engine/Objects/Bullet.h"
+#include "./include/Engine/Objects/Skybox.h"
+#include "./include/Engine/Objects/Tank.h"
 #include "./include/Engine/Objects/Wall.h"
 #include "./include/Utils/stb_image.h"
 
@@ -48,6 +49,8 @@ int tankText;
 int wallText;
 int turretText;
 int bulletText;
+
+Skybox skybox;
 
 
 int myCargaTexturas(const char* nome) {
@@ -130,6 +133,7 @@ int main() {
 
     openGlInit();
     shaderProgram = setShaders("./shaders/shader.vert", "./shaders/shader.frag");
+    shaderSkybox = setShaders("./shaders/shaderSkyBox.vert", "./shaders/shaderSkyBox.frag");
 
     // Initialize scene: VAOs, textures, tanks, walls...
     initScene();
@@ -234,6 +238,18 @@ void initMuros() {
 }
 
 void initScene() {
+    skybox.init();
+    skybox.set_shader(shaderSkybox);
+    std::vector<std::string> faces = {
+        "./assets/textures/skybox/desertft.png",
+        "./assets/textures/skybox/desertbk.png",
+        "./assets/textures/skybox/desertup.png",
+        "./assets/textures/skybox/desertdn.png",
+        "./assets/textures/skybox/desertrt.png",
+        "./assets/textures/skybox/desertlf.png"
+    };
+    skybox.add_cubemap_image(faces);
+
     // Position players
     player1.position = glm::vec3(-10.0f, 0.5f, 0.0f);
     player1.rotation = glm::vec3(0.0f);
@@ -295,6 +311,8 @@ void renderScene() {
     player1.draw(shaderProgram);
     player2.draw(shaderProgram);
     for (auto b : bullets)  b->draw(shaderProgram);
+    
+    skybox.draw();
 
     glBindVertexArray(0);
 }

@@ -20,6 +20,7 @@
 extern objeto base;
 extern bool isNightMode;
 extern GLuint shaderProgram;
+extern GLuint shaderSkybox;
 
 void toggleNightMode();
 /* void iluminacion(); */

@@ -5,6 +5,7 @@ bool isNightMode = false;
 extern objeto base;
 
 GLuint shaderProgram = 0;
+GLuint shaderSkybox = 0;
 
 // Función para alternar el modo noche
 void toggleNightMode() {
