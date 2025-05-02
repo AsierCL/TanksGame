@@ -79,113 +79,6 @@ void openGlInit() {
     glCullFace(GL_BACK); // Oculta las caras traseras (normal que no mira a la camara)
 }
 
-void iluminacion() {
-    // 1) Ambiente
-    int ambColLoc = glGetUniformLocation(shaderProgram, "ambientColor");
-    glUniform3f(ambColLoc, 0.2f, 0.2f, 0.2f); // luz azulada suave
-    int ambStrLoc = glGetUniformLocation(shaderProgram, "ambientStrength");
-    glUniform1f(ambStrLoc, 0.3f);
-
-    // 2) Sol direccional (p. ej. desde arriba y atrás)
-    glm::vec3 sunDir = glm::normalize(glm::vec3(-0.3f, -1.0f, -0.3f));
-    int sunDirLoc = glGetUniformLocation(shaderProgram, "sunDirection");
-    glUniform3fv(sunDirLoc, 1, glm::value_ptr(sunDir));
-    int sunColLoc = glGetUniformLocation(shaderProgram, "sunColor");
-    glUniform3f(sunColLoc, 1.0f, 1.0f, 0.9f); // algo cálido
-
-    // 3) Posición de la cámara (para especular)
-    int viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
-    glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos));
-
-    // 4) Color del objeto o usar uniform “objectColor”
-    // Lo puedes dejar en (1,1,1) y confiar en la textura.
-    int objColLoc = glGetUniformLocation(shaderProgram, "objectColor");
-    glUniform3f(objColLoc, 1.0f, 1.0f, 1.0f);
-}
-
-int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Tank Game OPENGL, Asier Cabo", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Failed to create window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    // OpenGL states
-    glEnable(GL_DEPTH_TEST);
-
-    openGlInit();
-    shaderProgram = setShaders("./shaders/shader.vert", "./shaders/shader.frag");
-    shaderSkybox = setShaders("./shaders/shaderSkyBox.vert", "./shaders/shaderSkyBox.frag");
-
-    // Initialize scene: VAOs, textures, tanks, walls...
-    initScene();
-    dibujarCubo();
-    dibujarEsfera();
-    dibujarSuelo();
-    dibujarArbusto();
-
-    if (!AudioManager::get().init()) {
-        std::cerr << "No se pudo inicializar audio\n";
-        return -1;
-    }
-    
-    initAudio();
-
-    sandText = myCargaTexturas("./assets/textures/sandTexture.png");
-    arbolText = myCargaTexturas("./assets/textures/a.png");
-    tankText = myCargaTexturas("./assets/textures/tankTexture.png");
-    wallText = myCargaTexturas("./assets/textures/wallTexture.png");
-    turretText = myCargaTexturas("./assets/textures/turretTexture.png");
-    bulletText = myCargaTexturas("./assets/textures/bulletTexture.png");
-
-    player1.tankTextureID = tankText;
-    player2.tankTextureID = tankText;
-    player1.turretTextureID = turretText;
-    player2.turretTextureID = turretText;
-    player1.bulletTextureID = bulletText;
-    player2.bulletTextureID = bulletText;
-    for(auto &w : walls) {
-        w.textureID = wallText;
-    }
-
-    // Asignamos los VAOs a los objetos
-    inicializarVAOs();
-    updateCamera();
-
-    while (!glfwWindowShouldClose(window)) {
-        float currentFrame = (float)getTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        processGameInput(window);
-        updateCamaraPosition(window);
-        iluminacion();
-        updateScene();
-        renderScene();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // Cleanup bullets
-    for (auto b : bullets) delete b;
-    bullets.clear();
-
-    glfwTerminate();
-    return 0;
-}
-
 void initMuros() {
     const int numMuros = 20; // Número de muros aleatorios
     const float distanciaMinimaJugadores = 10.0f;
@@ -300,4 +193,88 @@ void renderScene() {
     //skybox.draw();
 
     glBindVertexArray(0);
+}
+
+
+int main() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Tank Game OPENGL, Asier Cabo", NULL, NULL);
+    if (window == NULL) {
+        std::cout << "Failed to create window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+
+    // OpenGL states
+    glEnable(GL_DEPTH_TEST);
+
+    openGlInit();
+    shaderProgram = setShaders("./shaders/shader.vert", "./shaders/shader.frag");
+    shaderSkybox = setShaders("./shaders/shaderSkyBox.vert", "./shaders/shaderSkyBox.frag");
+
+    // Initialize scene: VAOs, textures, tanks, walls...
+    initScene();
+    dibujarCubo();
+    dibujarEsfera();
+    dibujarSuelo();
+    dibujarArbusto();
+
+    if (!AudioManager::get().init()) {
+        std::cerr << "No se pudo inicializar audio\n";
+        return -1;
+    }
+    
+    initAudio();
+
+    sandText = myCargaTexturas("./assets/textures/sandTexture.png");
+    arbolText = myCargaTexturas("./assets/textures/a.png");
+    tankText = myCargaTexturas("./assets/textures/tankTexture.png");
+    wallText = myCargaTexturas("./assets/textures/wallTexture.png");
+    turretText = myCargaTexturas("./assets/textures/turretTexture.png");
+    bulletText = myCargaTexturas("./assets/textures/bulletTexture.png");
+
+    player1.tankTextureID = tankText;
+    player2.tankTextureID = tankText;
+    player1.turretTextureID = turretText;
+    player2.turretTextureID = turretText;
+    player1.bulletTextureID = bulletText;
+    player2.bulletTextureID = bulletText;
+    for(auto &w : walls) {
+        w.textureID = wallText;
+    }
+
+    // Asignamos los VAOs a los objetos
+    inicializarVAOs();
+    updateCamera();
+
+    while (!glfwWindowShouldClose(window)) {
+        float currentFrame = (float)getTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        processGameInput(window);
+        updateCamaraPosition(window);
+        iluminacion();
+        updateScene();
+        renderScene();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Cleanup bullets
+    for (auto b : bullets) delete b;
+    bullets.clear();
+
+    glfwTerminate();
+    return 0;
 }

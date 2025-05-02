@@ -23,6 +23,6 @@ extern GLuint shaderProgram;
 extern GLuint shaderSkybox;
 
 void toggleNightMode();
-/* void iluminacion(); */
+void iluminacion();
 
 #endif // SHADERS.H
