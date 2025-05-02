@@ -8,9 +8,8 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // Dirección "arriba" del mun
 float cameraSpeed = 0.1f; // Velocidad de movimiento de la cámara
 float VARIABLETEMPORAL = 45.0f; // Variable temporal para la cámara
 
-CameraMode cameraMode = EXTERIOR; // Modo de cámara actual
 
-void updateCameraMode() {
+void updateCamera() {
     cameraPos = glm::vec3(25.0f, 25.0f, 25.0f);
     cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 }

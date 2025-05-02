@@ -30,8 +30,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // Scene objects
-Tank player1;
-Tank player2;
+Tank player1, player2;
 std::vector<Bullet*> bullets;
 std::vector<Wall> walls;
 
@@ -44,13 +43,7 @@ void renderScene();
 extern GLuint setShaders(const char *nVertx, const char *nFrag);
 
 // Texturas
-int sandText;
-int arbolText;
-int tankText;
-int wallText;
-int turretText;
-int bulletText;
-
+int sandText, arbolText, tankText, wallText, turretText, bulletText;
 Skybox skybox;
 
 
@@ -163,13 +156,13 @@ int main() {
     player2.turretTextureID = turretText;
     player1.bulletTextureID = bulletText;
     player2.bulletTextureID = bulletText;
-    walls[0].textureID = wallText;
+    for(auto &w : walls) {
+        w.textureID = wallText;
+    }
 
     // Asignamos los VAOs a los objetos
     inicializarVAOs();
-    if(cameraMode == EXTERIOR){
-        updateCameraMode();
-    }
+    updateCamera();
 
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = (float)getTime();
@@ -195,7 +188,7 @@ int main() {
 
 void initMuros() {
     const int numMuros = 20; // Número de muros aleatorios
-    const float distanciaMinimaJugadores = 20.0f;
+    const float distanciaMinimaJugadores = 10.0f;
     const float areaMin = -40.0f;
     const float areaMax = 40.0f;
     const float largoMin = 2.0f;
@@ -243,9 +236,9 @@ void initScene() {
     skybox.add_cubemap_image(faces);
 
     // Position players
-    player1.position = glm::vec3(-10.0f, 0.5f, 0.0f);
+    player1.position = glm::vec3(-30.0f, 0.5f, 0.0f);
     player1.rotation = glm::vec3(0.0f);
-    player2.position = glm::vec3(10.0f, 0.5f, 0.0f);
+    player2.position = glm::vec3(30.0f, 0.5f, 0.0f);
     player2.rotation = glm::vec3(180.0f, 1.0f, 0.0f);
 
     // Create a perimeter wall

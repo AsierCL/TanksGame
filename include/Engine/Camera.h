@@ -28,17 +28,9 @@ extern glm::vec3 cameraUp;
 extern float cameraSpeed;
 extern float VARIABLETEMPORAL;
 
-// CAMERA MODES
-enum CameraMode {
-    FIRST_PERSON,
-    THIRD_PERSON,
-    EXTERIOR     
-};
-
-extern CameraMode cameraMode;
 
 
-void updateCameraMode();
+void updateCamera();
 void myCamara();
 void updateCamaraPosition(GLFWwindow *window);
 
