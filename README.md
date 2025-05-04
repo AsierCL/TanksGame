@@ -69,9 +69,6 @@ Ejemplo de uso
 
 make         # Compila el proyecto
 make run     # Ejecuta el binario generado
+```
 
-👨‍💻 Autor
-
-Asier Cabo – Estudiante de Ingeniería Informática
-
-🎓 Proyecto desarrollado en el contexto de la asignatura de Computación Gráfica.
+🎓 Proyecto desarrollado en el contexto de la asignatura de Computación Gráfica (USC).
